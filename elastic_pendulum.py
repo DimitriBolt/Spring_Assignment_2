@@ -1,5 +1,4 @@
-import numpy as np
-from scipy.integrate import solve_ivp
+import numpy as np; from numpy import ndarray; from scipy.integrate import solve_ivp
 
 def compute_lyapunov_exponent(initial_conditions: np.ndarray,  # initial conditions [r, theta, dr, dtheta]
                               perturbations: np.ndarray,       # perturbations [delta_r, delta_theta, delta_dr, delta_dtheta]
@@ -46,7 +45,6 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,  # initial conditi
 
         delta_final = sol.y[4:, -1]  # final perturbation vector
         exponent = np.log(np.linalg.norm(delta_final) / np.linalg.norm(pert)) / t_max  # Lyapunov exponent calculation
-
         lyapunov_exponents.append(exponent)  # store exponent
 
     return np.array(lyapunov_exponents)  # return array of exponents
@@ -60,17 +58,17 @@ if __name__ == '__main__':
     epsilon = 0.0     # additional potential parameter
     params = (g, k, m, L0, epsilon)  # parameters tuple
 
-    initial_conditions = np.array([  # initial state conditions
+    initial_conditions: ndarray = np.array([  # initial state conditions
         [1.0, np.pi/6, 0.0, 0.0],
         [1.2, np.pi/4, 0.0, 0.0]
     ])
 
-    perturbations = np.array([  # initial perturbation conditions
+    perturbations: ndarray = np.array([  # initial perturbation conditions
         [0.0, 1e-8, 0.0, 0.0],
         [0.0, 1e-8, 0.0, 0.0]
     ])
 
-    lyapunov_exps = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
+    lyapunov_exps: ndarray = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
 
     for idx, exp in enumerate(lyapunov_exps):  # print results
         print(f'Largest Lyapunov exponent for initial condition {idx+1}: {exp:.6f}')
