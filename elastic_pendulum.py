@@ -4,7 +4,7 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,  # initial conditi
                               perturbations: np.ndarray,       # perturbations [delta_r, delta_theta, delta_dr, delta_dtheta]
                               params: tuple,                   # parameters tuple (g, k, m, L0, epsilon)
                               t_max: float = 100,              # maximum time for integration
-                              dt: float = 0.1) -> np.ndarray:  # time step for evaluation
+                              dt: float = 0.1) -> list:  # time step for evaluation
     g, k, m, L0, epsilon = params  # unpack parameters
 
     def elastic_pendulum(t, y):
@@ -47,7 +47,7 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,  # initial conditi
         exponent = np.log(np.linalg.norm(delta_final) / np.linalg.norm(pert)) / t_max  # Lyapunov exponent calculation
         lyapunov_exponents.append(exponent)  # store exponent
 
-    return np.array(lyapunov_exponents)  # return array of exponents
+    return lyapunov_exponents  # return list of exponents
 
 
 if __name__ == '__main__':
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         [0.0, 1e-8, 0.0, 0.0]
     ])
 
-    lyapunov_exps: ndarray = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
+    lyapunov_exps: list = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
 
     for idx, exp in enumerate(lyapunov_exps):  # print results
         print(f'Largest Lyapunov exponent for initial condition {idx+1}: {exp:.6f}')
