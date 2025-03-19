@@ -30,18 +30,18 @@ def variational_equations(t, z):
     return np.concatenate((dydt, ddelta_dt))  # combined derivatives
 
 
-def compute_lyapunov_exponent(initial_conditions: np.ndarray,   # initial conditions [r, theta, dr, dtheta]
-                              perturbations: np.ndarray,        # perturbations [delta_r, delta_theta, delta_dr, delta_dtheta]
-                              params: tuple,                    # parameters tuple (g, k, m, L0, epsilon)
-                              t_max: float = 100,               # maximum time for integration
-                              dt: float = 0.1) -> list:         # time step for evaluation
+def compute_lyapunov_exponent(initial_conditions: np.ndarray,  # initial conditions [r, theta, dr, dtheta]
+                              perturbations: np.ndarray,  # perturbations [delta_r, delta_theta, delta_dr, delta_dtheta]
+                              params: tuple,  # parameters tuple (g, k, m, L0, epsilon)
+                              t_max: float = 100,  # maximum time for integration
+                              dt: float = 0.1) -> list:  # time step for evaluation
     g, k, m, L0, epsilon = params  # unpack parameters
-    ext_initial_conditions = np.vstack((initial_conditions, perturbations))
-
 
     lyapunov_exponents: list = []  # initialize Lyapunov exponents list
 
-    for y0 in ext_initial_conditions.T: # loop over initial conditions and perturbations
+    for ic, pert in zip(initial_conditions, perturbations):  # loop over initial conditions and perturbations
+        y0 = np.concatenate((ic, pert))  # concatenate state and perturbation
+
         sol = solve_ivp(fun=variational_equations,  # numerical integration
                         t_span=[0, t_max],
                         y0=y0,
@@ -54,9 +54,8 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,   # initial condit
         E = energy(Y, g, k, m, L0, epsilon)
         save_chart(sol)
 
-        delta_T = sol.y[4:, -1]  #   final perturbation vector
-        delta_0 = sol.y[4:, +1]  # initial perturbation vector
-        exponent = np.log(np.linalg.norm(delta_T, axis=0) / np.linalg.norm(delta_0, axis=0)) / t_max  # Lyapunov exponent calculation
+        delta_final = sol.y[4:, -1]  # final perturbation vector
+        exponent = np.log(np.linalg.norm(delta_final, axis=0) / np.linalg.norm(pert, axis=0)) / t_max  # Lyapunov exponent calculation
         lyapunov_exponents.append(exponent)  # store exponent
 
     return lyapunov_exponents  # return list of exponents
@@ -91,17 +90,14 @@ if __name__ == '__main__':
     epsilon = 0.0  # additional potential parameter
     params = (g, k, m, L0, epsilon)  # parameters tuple
 
-    initial_conditions: ndarray = np.array(  # initial state conditions
-        [[1., 1.],
-         [0.52359878, 1.04719755],
-         [0., 0.],
-         [0., 0.]])
+    initial_conditions: ndarray = np.array([  # initial state conditions
+        [1.0, np.pi / 6, 0.0, 0.0],
+        [1.2, np.pi / 4, 0.0, 0.0]
+    ])
 
     perturbations: ndarray = np.array([  # initial perturbation conditions
-        [1, 1],
-        [0, 0],
-        [0, 0],
-        [0, 0]
+        [0.0, 1e-5, 0.0, 0.0],
+        [1e-5, 0.0, 0.0, 0.0]
     ])
 
     lyapunov_exps: list = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
