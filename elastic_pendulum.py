@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 
 def elastic_pendulum(t, y):
+    k = 40.0  # spring constant
     r, theta, dr, dtheta = y  # state variables
     d2r = r * dtheta ** 2 + g * np.cos(theta) - (k / m) * (r - L0) + epsilon / r ** 2  # radial acceleration
     d2theta = -2 * dr * dtheta / r - (g / r) * np.sin(theta)  # angular acceleration
