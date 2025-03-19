@@ -4,8 +4,7 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 
 
-def elastic_pendulum(t, y):
-    k = 40.0  # spring constant
+def elastic_pendulum(t, y, g, k, m, L0, epsilon):
     r, theta, dr, dtheta = y  # state variables
     d2r = r * dtheta ** 2 + g * np.cos(theta) - (k / m) * (r - L0) + epsilon / r ** 2  # radial acceleration
     d2theta = -2 * dr * dtheta / r - (g / r) * np.sin(theta)  # angular acceleration
@@ -25,7 +24,7 @@ def variational_equations(t, z, g, k, m, L0, epsilon):
         [(2 * dr * dtheta - g * np.sin(theta)) / r ** 2, -(g / r) * np.cos(theta), -2 * dtheta / r, -2 * dr / r]
     ])
 
-    dydt = elastic_pendulum(t, y)  # derivatives of state variables
+    dydt = elastic_pendulum(t, y, g, k, m, L0, epsilon)  # derivatives of state variables
     ddelta_dt = dfdy @ delta  # derivatives of perturbation variables
 
     return np.concatenate((dydt, ddelta_dt))  # combined derivatives
