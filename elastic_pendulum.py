@@ -13,9 +13,7 @@ def elastic_pendulum(t, y):
     return dY
 
 
-def variational_equations(t, z):
-    k = 40.0  # spring constant
-    m = 1.0  # mass
+def variational_equations(t, z, g, k, m, L0, epsilon):
     y = z[:4]  # original state variables
     delta = z[4:].reshape((4,))  # perturbation variables
     r, theta, dr, dtheta = y  # unpack state variables
@@ -51,7 +49,9 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,   # initial condit
                         method='RK45',
                         t_eval=np.arange(0, t_max, dt),
                         rtol=1e-12,
-                        atol=1e-12)
+                        atol=1e-12,
+                        args = (g, k, m, L0, epsilon)
+        )
 
         Y = sol.y[0:4, ]
         E = energy(Y, g, k, m, L0, epsilon)
