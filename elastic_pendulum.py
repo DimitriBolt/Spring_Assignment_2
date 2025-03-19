@@ -15,6 +15,7 @@ def elastic_pendulum(t, y):
 
 def variational_equations(t, z):
     k = 40.0  # spring constant
+    m = 1.0  # mass
     y = z[:4]  # original state variables
     delta = z[4:].reshape((4,))  # perturbation variables
     r, theta, dr, dtheta = y  # unpack state variables
