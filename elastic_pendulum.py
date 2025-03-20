@@ -2,6 +2,8 @@ import numpy as np
 from numpy import ndarray
 from scipy.integrate import solve_ivp
 
+from equations_of_motion import t_span
+
 
 def elastic_pendulum(t, y, g, k, m, L0, epsilon):
     r, theta, dr, dtheta = y  # radial pos., angular pos., radial vel., angular vel.
@@ -49,9 +51,10 @@ def compute_lyapunov_exponent(initial_condition: np.ndarray,
 
     for idx in range(num_conditions):
         y0 = np.concatenate((initial_condition[:, idx], perturbation[:, idx]))  # combined initial state and perturbation
-        sol = solve_ivp(variational_equations,
-                        [0, t_max],
-                        y0, method='RK45',
+        sol = solve_ivp(fun=variational_equations,
+                        t_span=[0, t_max],
+                        y0=y0,
+                        method='RK45',
                         t_eval=[0, t_max],
                         rtol=1e-12,
                         atol=1e-12,
