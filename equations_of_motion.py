@@ -19,9 +19,8 @@ def energy(Y, n_ic, g, k, m, L0, epsilon):
 g, k, m, L0, epsilon = 9.81, 1.0, 1.0, 10.0, -1
 
 initial_conditions = np.array([
-    [1.0, np.pi/6, 0.0, 0.0],
-    # [1.0 + 1.e-2, np.pi/6, 0.0, 0.0],
-    [1.0, np.pi/6 + 1.e-8, 0.0, 0.0],
+    [1 +0 , np.pi/6, 0.0, 0.0],
+    [1 +1 , np.pi/6, 0.0, 0.0],
     ]).transpose()
 
 # Check if dimensions are consistent for vectorized solver
@@ -32,9 +31,9 @@ n_eval = 10000
 t_span, t_eval = (0, tmax), np.linspace(0, tmax, n_eval)
 
 sol = solve_ivp(
-    elastic_pendulum,
-    t_span,
-    initial_conditions.flatten(),
+    fun = elastic_pendulum,
+    t_span=t_span,
+    y0=initial_conditions.flatten(),
     args=(g, k, m, L0, epsilon),
     t_eval=t_eval,
     method='RK45',
