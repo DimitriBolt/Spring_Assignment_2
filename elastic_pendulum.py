@@ -36,7 +36,11 @@ def compute_lyapunov_exponent(initial_conditions: np.ndarray,   # initial condit
                               t_max: float = 100,               # maximum time for integration
                               dt: float = 0.1) -> list:         # time step for evaluation
     g, k, m, L0, epsilon = params  # unpack parameters
+    initial_conditions = initial_conditions.reshape(4, -1)
+    perturbations = perturbations.reshape(4, -1)
+
     ext_initial_conditions = np.vstack((initial_conditions, perturbations))
+
 
 
     lyapunov_exponents: list = []  # initialize Lyapunov exponents list
