@@ -94,13 +94,12 @@ if __name__ == '__main__':
     params = (g, k, m, L0, epsilon)  # parameters tuple
 
     initial_conditions: ndarray = np.array([
-        [1.0, np.pi / 6, 0.0, 0.0],
-        [1.0, np.pi / 4, 0.0, 0.0],
+        [1.0, np.pi / 6, 0.0, 0.0]
     ]).transpose()
 
+
     perturbations: ndarray = np.array([
-        [1, 0, 0, 0],
-        [1, 0, 0, 0],
+        [1, 0, 0, 0]
     ]).transpose()
 
     lyapunov_exps: list = compute_lyapunov_exponent(initial_conditions, perturbations, params)  # compute exponents
