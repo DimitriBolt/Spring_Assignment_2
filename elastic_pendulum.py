@@ -2,7 +2,7 @@ import numpy as np
 from numpy import ndarray
 from scipy.integrate import solve_ivp
 
-from equations_of_motion import t_span
+# from equations_of_motion import t_span
 
 
 def elastic_pendulum(t, y, g, k, m, L0, epsilon):
@@ -25,7 +25,7 @@ def variational_equations(t, z, g, k, m, L0, epsilon):
             [0, 0, 1, 0],
             [0, 0, 0, 1],
             [dtheta ** 2 - k / m - 2 * epsilon / r ** 3, -g * np.sin(theta), 0, 2 * r * dtheta],
-            [(2 * dr * dtheta - g * np.sin(theta)) / r ** 2, -(g / r) * np.cos(theta), -2 * dtheta / r, -2 * dr / r]
+            [(2 * dr * dtheta + g * np.sin(theta)) / r ** 2, -(g / r) * np.cos(theta), -2 * dtheta / r, -2 * dr / r]
         ])
 
         dydt = elastic_pendulum(t, y, g, k, m, L0, epsilon)  # derivatives of state variables
