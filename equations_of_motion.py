@@ -19,14 +19,14 @@ def energy(Y, n_ic, g, k, m, L0, epsilon):
 g, k, m, L0, epsilon = 9.81, 1.0, 1.0, 10.0, -1
 
 initial_conditions = np.array([
-    [1 +0 , np.pi/6, 0.0, 0.0],
-    [1 +1 , np.pi/6, 0.0, 0.0],
+    [1 +0   , np.pi/6, 0.0, 0.0],
+    [1 +1e-4, np.pi/6, 0.0, 0.0],
     ]).transpose()
 
 # Check if dimensions are consistent for vectorized solver
 assert elastic_pendulum(1, initial_conditions, g, k, m, L0, epsilon).shape == initial_conditions.shape
 
-tmax = 150
+tmax = 130
 n_eval = 10000
 t_span, t_eval = (0, tmax), np.linspace(0, tmax, n_eval)
 
@@ -42,12 +42,12 @@ sol = solve_ivp(
     vectorized=True
 )
 
-fig, axes = plt.subplots(4, 1, figsize=(10, 6), sharex=True)
+fig, axes = plt.subplots(5, 1, figsize=(10, 10), sharex=True)
 labels = ["Case 1", "Case 2", "Case 3", "Case 4"]
 
 n_ic = initial_conditions.shape[1]
 Y = sol.y.reshape(4, n_ic, -1)
-dY = np.diff(Y, axis=1).squeeze()
+dY = np.diff(Y, axis=1).squeeze() # difference on second dimension
 norm_dY = np.linalg.norm(dY, axis=0)
 
 lyapunov_exponent = 1/tmax * np.log(norm_dY[-1]/norm_dY[0])
@@ -56,26 +56,40 @@ print(f'Largest Lyapunov exponent for initial condition {0+1}: {lyapunov_exponen
 E = energy(Y, n_ic, g, k, m, L0, epsilon)
 for i in range(n_ic):
     assert np.max(abs(E[i] - E[i][0])) < 1e-8
-
-for j in range(n_ic):
-    axes[0].plot(sol.t, Y[0][j])
-    axes[1].plot(sol.t, Y[1][j])
-
-axes[2].plot(sol.t, dY[0])
-axes[2].plot(sol.t, dY[1])
-
-axes[3].plot(sol.t, np.log(norm_dY))
-
+# Charts:
+# r
+axes[0].plot(sol.t, Y[0][0]) # Radial Distance r (m)
+axes[0].plot(sol.t, Y[0][1]) # Radial Distance r (m)
 axes[0].set_xlabel("Time (s)")
 axes[0].set_ylabel("Radial Distance r (m)")
+# difference of r
+axes[1].plot(sol.t, dY[0])
 axes[1].set_xlabel("Time (s)")
-axes[1].set_ylabel("Angle (rad)")
+axes[1].set_ylabel("delta Distance")
+
+# theta
+axes[2].plot(sol.t, Y[1][0]) # Angle (rad)
+axes[2].plot(sol.t, Y[1][1]) # Angle (rad)
 axes[2].set_xlabel("Time (s)")
-axes[2].set_ylabel("Radial Distance r (m)")
+axes[2].set_ylabel("Angle (rad)")
+# difference of theta
+axes[3].plot(sol.t, dY[1])
+axes[3].set_xlabel("Time (s)")
+axes[3].set_ylabel("delta Angle")
+
+# ||dY||
+axes[4].plot(sol.t, norm_dY)
+axes[4].set_xlabel("Time (s)")
+axes[4].set_ylabel("||dY||")
+axes[4].set_yscale("log")
+
 
 axes[0].grid()
 axes[1].grid()
 axes[2].grid()
+axes[3].grid()
+axes[4].grid()
+
 plt.suptitle("Elastic Pendulum Motion for Different Initial Conditions (Vectorized)")
 plt.savefig("elastic_pendulum_vectorized.png", dpi=300, bbox_inches='tight')
 plt.close()
