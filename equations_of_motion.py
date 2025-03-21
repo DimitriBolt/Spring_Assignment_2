@@ -19,7 +19,7 @@ def energy(Y, n_ic, g, k, m, L0, epsilon):
 g, k, m, L0, epsilon = 9.81, 1.0, 1.0, 10.0, -1
 
 initial_conditions = np.array([
-    [1 +0   , np.pi/6, 0.0, 0.0],
+    [1      , np.pi/6, 0.0, 0.0],
     [1 +1e-4, np.pi/6, 0.0, 0.0],
     ]).transpose()
 
@@ -42,8 +42,6 @@ sol = solve_ivp(
     vectorized=True
 )
 
-fig, axes = plt.subplots(5, 1, figsize=(10, 10), sharex=True)
-labels = ["Case 1", "Case 2", "Case 3", "Case 4"]
 
 n_ic = initial_conditions.shape[1]
 Y = sol.y.reshape(4, n_ic, -1)
@@ -56,40 +54,48 @@ print(f'Largest Lyapunov exponent for initial condition {0+1}: {lyapunov_exponen
 E = energy(Y, n_ic, g, k, m, L0, epsilon)
 for i in range(n_ic):
     assert np.max(abs(E[i] - E[i][0])) < 1e-8
+
 # Charts:
+fig, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
 # r
-axes[0].plot(sol.t, Y[0][0]) # Radial Distance r (m)
-axes[0].plot(sol.t, Y[0][1]) # Radial Distance r (m)
-axes[0].set_xlabel("Time (s)")
+axes[0].plot(sol.t, Y[0][0] , label='1st IC') # Radial Distance r (m) for first initial condition
+axes[0].plot(sol.t, Y[0][1], label='2nd IC') # Radial Distance r (m) for second initial condition
 axes[0].set_ylabel("Radial Distance r (m)")
+axes[0].set_title("r(t) for two different initial conditions. Initial difference is 1e-4 only!")
+axes[0].legend()
 # difference of r
 axes[1].plot(sol.t, dY[0])
 axes[1].set_xlabel("Time (s)")
-axes[1].set_ylabel("delta Distance")
+axes[1].set_ylabel("delta r (m)")
+axes[1].set_title("r1(t)-r2(t). The difference between r(t) at fist IC and r(t) for second, very similar, IC ")
 
 # theta
-axes[2].plot(sol.t, Y[1][0]) # Angle (rad)
-axes[2].plot(sol.t, Y[1][1]) # Angle (rad)
-axes[2].set_xlabel("Time (s)")
+axes[2].plot(sol.t, Y[1][0],  label='1st IC') # Angle (rad)
+axes[2].plot(sol.t, Y[1][1], label='2nd IC') # Angle (rad)
 axes[2].set_ylabel("Angle (rad)")
+axes[2].legend()
 # difference of theta
 axes[3].plot(sol.t, dY[1])
 axes[3].set_xlabel("Time (s)")
 axes[3].set_ylabel("delta Angle")
-
-# ||dY||
-axes[4].plot(sol.t, norm_dY)
-axes[4].set_xlabel("Time (s)")
-axes[4].set_ylabel("||dY||")
-axes[4].set_yscale("log")
-
+axes[3].set_title("θ1(t)-θ2(t). The difference between θ1(t) at fist IC and θ2(t) for second, very similar, IC ")
 
 axes[0].grid()
 axes[1].grid()
 axes[2].grid()
 axes[3].grid()
-axes[4].grid()
 
 plt.suptitle("Elastic Pendulum Motion for Different Initial Conditions (Vectorized)")
 plt.savefig("elastic_pendulum_vectorized.png", dpi=300, bbox_inches='tight')
 plt.close()
+
+#  Another chart. ||delta Y|| in a logarithmic scale
+fig2, axes2 = plt.subplots(1, 1, figsize=(10, 6), sharex=True)
+# ||dY||
+axes2.plot(sol.t, norm_dY)
+axes2.set_xlabel("Time (s)")
+axes2.set_ylabel("||dY||")
+axes2.set_yscale("log")
+axes2.grid()
+plt.suptitle("||delta Y|| in a logarithmic scale")
+plt.savefig("norma_of_delta_Y.png", dpi=300, bbox_inches='tight')
