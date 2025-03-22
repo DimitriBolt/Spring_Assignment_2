@@ -56,37 +56,42 @@ for i in range(n_ic):
     assert np.max(abs(E[i] - E[i][0])) < 1e-8
 
 # Charts:
-fig, axes = plt.subplots(4, 1, figsize=(10, 12), sharex=True)
+fig, axes = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
 # r
 axes[0].plot(sol.t, Y[0][0] , label='1st IC') # Radial Distance r (m) for first initial condition
 axes[0].plot(sol.t, Y[0][1], label='2nd IC') # Radial Distance r (m) for second initial condition
 axes[0].set_ylabel("Radial Distance r (m)")
-axes[0].set_title("r(t) for two different initial conditions. Initial difference is 1e-4 only!")
+axes[0].set_title("r(t) for two different initial conditions. Perturbation is 1e-4m only!")
 axes[0].legend()
 # difference of r
 axes[1].plot(sol.t, dY[0])
 axes[1].set_xlabel("Time (s)")
 axes[1].set_ylabel("delta r (m)")
 axes[1].set_title("r1(t)-r2(t). The difference between r(t) at fist IC and r(t) for second, very similar, IC ")
-
-# theta
-axes[2].plot(sol.t, Y[1][0],  label='1st IC') # Angle (rad)
-axes[2].plot(sol.t, Y[1][1], label='2nd IC') # Angle (rad)
-axes[2].set_ylabel("Angle (rad)")
-axes[2].legend()
-# difference of theta
-axes[3].plot(sol.t, dY[1])
-axes[3].set_xlabel("Time (s)")
-axes[3].set_ylabel("delta Angle")
-axes[3].set_title("θ1(t)-θ2(t). The difference between θ1(t) at fist IC and θ2(t) for second, very similar, IC ")
-
 axes[0].grid()
 axes[1].grid()
-axes[2].grid()
-axes[3].grid()
+plt.suptitle("Elastic Pendulum Motion for Different Initial Conditions: Distance")
+plt.savefig("elastic_pendulum_r.png", dpi=300, bbox_inches='tight')
+plt.close()
 
-plt.suptitle("Elastic Pendulum Motion for Different Initial Conditions (Vectorized)")
-plt.savefig("elastic_pendulum_vectorized.png", dpi=300, bbox_inches='tight')
+fig4, axes4 = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+# theta
+axes4[0].plot(sol.t, Y[1][0],  label='1st IC') # Angle (rad)
+axes4[0].plot(sol.t, Y[1][1], label='2nd IC') # Angle (rad)
+axes4[0].set_ylabel("Angle (rad)")
+axes4[0].set_title("θ(t) for two different initial conditions of Elastic Pendulum. Perturbation is 1e-4m only!")
+axes4[0].legend()
+# difference of theta
+axes4[1].plot(sol.t, dY[1])
+axes4[1].set_xlabel("Time (s)")
+axes4[1].set_ylabel("delta Angle")
+axes4[1].set_title("θ1(t)-θ2(t). The difference between θ1(t) at fist IC and θ2(t) for second, very similar, IC ")
+
+axes4[0].grid()
+axes4[1].grid()
+
+plt.suptitle("Elastic Pendulum Motion for Different Initial Conditions (Vectorized): Angle")
+plt.savefig("elastic_pendulum_theta.png", dpi=300, bbox_inches='tight')
 plt.close()
 
 #  Another chart. ||delta Y|| in a logarithmic scale
@@ -99,3 +104,18 @@ axes2.set_yscale("log")
 axes2.grid()
 plt.suptitle("||delta Y|| in a logarithmic scale")
 plt.savefig("norma_of_delta_Y.png", dpi=300, bbox_inches='tight')
+plt.close()
+
+#  Another chart. Energy
+fig3, axes3 = plt.subplots(1, 1, figsize=(10, 6), sharex=True)
+# Evergy
+axes3.plot(sol.t, E[0], label='1st IC') # Energy for first initial condition
+axes3.plot(sol.t, E[1], label='2nd IC') # Energy for first initial condition
+axes3.legend()
+axes3.set_xlabel("Time (s)")
+axes3.set_ylabel("Energy (eV)")
+# axes2.set_yscale("log")
+axes3.grid()
+plt.suptitle("Energy conservation")
+plt.savefig("energy.png", dpi=300, bbox_inches='tight')
+plt.close()
